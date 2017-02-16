@@ -10,6 +10,16 @@ SCREEN_HEIGHT = 500
 
 FPS = 60
 
+# Key Variables
+
+absfactor = 1           # number by which the random energy absorption factor is multiplied
+reprochance = 0.002     # reproduction chance
+reproage = 20           # reproduction min age
+senescence = 150        # senescence age (maximum age)
+reproen = 3000          # minimum reproduction energy
+deathchance = 0.005     # chance of random death (1.0 = always)
+popcap = 300            # population cap
+
 # Classes
 
 class plant(object):
@@ -87,7 +97,7 @@ class plant(object):
         rad = int(round((self.energy / 100)))
         return rad
 
-# FUNCTIONS
+# Functions
 
 def currtime():
     ct = strftime("%Y-%m-%d %H:%M:%S", gmtime())
@@ -96,16 +106,17 @@ def currtime():
 def debug():
     [plant.stats() for plant in plants]
 
+def feed():
+    plant.energy = plant.energy + (1 * plant.absorptionfactor)
+
 def reproduce():
     # Define generation colour
     red = random.randint(0, 255)
     green = random.randint(0, 255)
     blue = random.randint(0, 255)
     for plant in plants:
-        # reproduction chance
-        reprochance = 0.002
         # reproduction condition
-        if (plant.age > 20) and (plant.energy > 3000) and ((random.random() <= reprochance)):
+        if (plant.age > reproage) and (plant.energy > reproen) and ((random.random() <= reprochance)):
             # get new plant id by finding the id of the last plant
             np_plantid = len(plants)
             # add 1 to global total plants counter
@@ -128,7 +139,7 @@ def reproduce():
             np.red = red
             np.green = green
             np.blue = blue
-            np.absorptionfactor = random.randint(1, 100)
+            np.absorptionfactor = absfactor * random.randint(1, 100)
             # remove some energy from the parent
             plant.remove_energy(en)
             # add new plant (np) to plants and total
@@ -152,7 +163,7 @@ for plant in plants:
     plant.move_speed = 0
     plant.energy = random.randint(0, 5000)
     plant.setcolour(0, 255, 0)
-    plant.absorptionfactor = random.randint(1, 100)
+    plant.absorptionfactor = absfactor * random.randint(1, 100)
 
 # Pygame module start, screen defined and clock active
 pygame.init()
@@ -205,7 +216,7 @@ while True:
                 y = plant.ypos
 
                 # energy change
-                plant.energy = plant.energy + (1 * plant.absorptionfactor)
+                feed()
 
                 # render
                 red = plant.red
@@ -217,18 +228,17 @@ while True:
                 # reproduction - now working!
                 reproduce()
 
-                # kill old plants (age > 100), low energy plants
-                if plant.age > 100:
+                # kill old plants, low energy plants
+                if plant.age > senescence:
                     plant.kill()
                 if plant.energy <= 100:  # 100 as radius of plant is energy/100 - so that plant is visible
                     plant.kill()
 
                 # random chance of death
-                if random.randint(0, 100) < 1:
+                if random.random() <= deathchance:
                     plant.kill()
 
                 # population cap
-                popcap = 300
                 if len(plants) > popcap:
                     plant.kill()
 
