@@ -5,19 +5,18 @@ from time import gmtime, strftime
 
 # Window properties
 os.environ['SDL_VIDEO_CENTERED'] = '1'
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 500
-
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 600
 FPS = 60
 
 # Key Variables
 
-absfactor = 1           # number by which the random energy absorption factor is multiplied
-reprochance = 0.002     # reproduction chance
+absfactor = 0.2           # number by which the random energy absorption factor is multiplied (how well plants feed)
+reprochance = 0.02     # reproduction chance
 reproage = 20           # reproduction min age
-senescence = 150        # senescence age (maximum age)
+senescence = 1500        # senescence age (maximum age)
 reproen = 3000          # minimum reproduction energy
-deathchance = 0.005     # chance of random death (1.0 = always)
+deathchance = 0.00005     # chance of random death (1.0 = always)
 popcap = 300            # population cap
 
 # Classes
@@ -53,7 +52,7 @@ class plant(object):
 
     def resurrect(self):
         self.alive = 1
-		
+
     def currentpos(self):
         print('Plant # %s, Position (x, y) = (%s,%s)'
               %(self.plantid, self.xpos, self.ypos))
@@ -65,7 +64,7 @@ class plant(object):
         else:
             print('Dead Plant # %s, Position (x, y) = (%s,%s), Energy = %s, Age = %s'
                   %(self.plantid, self.xpos, self.ypos, self.energy, self.age))
-		
+
     def add_energy(self, energyinput):
         self.energy = self.energy + energyinput
 
